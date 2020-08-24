@@ -1,0 +1,30 @@
+name: Playlist Update
+
+on:
+ workflow_dispatch:
+ schedule:
+   - cron: '0 12 * * MON'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: update
+      run: python backup.py -u --no-git
+    - name: commit
+      run: |
+        git config --global user.email 'action@github.com'
+        git config --global user.name 'GitHub Action'
+        git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+        git add .
+        git diff-index --quiet HEAD || git commit -m 'PLAYLIST UPDATE'
+        git push github HEAD:${GITHUB_REF}
