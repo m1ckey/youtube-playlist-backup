@@ -12,5 +12,6 @@ Optionally, it can download the audio media. These files are for obvious reasons
 - `./backup.py`
 
 ## Auto Update
+![auto update](../../workflows/Playlist%20Update/badge.svg)
 
 You can use the configured GitHub Action to update your tracked playlists weekly.
