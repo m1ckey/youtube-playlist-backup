@@ -1,6 +1,6 @@
 # YouTube Playlist Backup
 
-This Python script uses [youtube-dl](https://github.com/ytdl-org/youtube-dl) to store all changes of a YouTube playlist in git.  
+This Python script uses [youtube-dl](https://github.com/ytdl-org/youtube-dl) to track all changes of a YouTube playlist in git.  
 The main purpose is that you know which videos are affected if they become _unavailable_.
 
 Optionally, it can download the audio media. These files are for obvious reasons not tracked in git.
