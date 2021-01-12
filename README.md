@@ -7,7 +7,7 @@ Optionally, it can download the audio media. These files are for obvious reasons
 
 ## Installation
 
-- Fork this repository and clone the forked repo to your machine.
+- [Duplicate](https://github.com/m1ckey/youtube-playlist-backup/generate) this template and clone the new repository to your machine.
 - `pip install -r requirements.txt`
 - `./backup.py`
 
