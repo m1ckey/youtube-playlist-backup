@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import io
 import os
@@ -6,6 +6,7 @@ import sys
 import glob
 import json
 import subprocess as sp
+from os import path
 
 import youtube_dl as yt
 
@@ -25,7 +26,9 @@ YOUTUBE_DL_OPTIONS_DOWNLOAD = ['-i',
                                '--audio-format', 'opus',
                                '--audio-quality', '0',
                                # todo: thumbnail
-                               '-o', 'playlists/%(playlist)s - %(playlist_id)s/%(title)s - %(id)s.%(ext)s']
+                               '-o', path.join('playlists',
+                                               '%(playlist)s - %(playlist_id)s',
+                                               '%(title)s - %(id)s.%(ext)s')]
 
 
 def youtube_dl(options):
@@ -60,16 +63,16 @@ def backup(playlist, download=False, no_git=False):
     sys.stdout = sys.__stdout__
 
     info = json.loads(stdout_buf.getvalue())
-    playlist_dir = f'playlists/{info["title"]} - {info["id"]}'
+    playlist_dir = path.join('playlists', f'{info["title"]} - {info["id"]}')
     os.makedirs(playlist_dir, exist_ok=True)
-    with open(f'{playlist_dir}/playlist.jsonl', 'w') as f:
+    with open(path.join(f'{playlist_dir}', 'playlist.jsonl'), 'w') as f:
         jsonl = '\n'.join([json.dumps(entry) for entry in info["entries"]])
         f.write(jsonl)
 
     if download:
         options = YOUTUBE_DL_OPTIONS_DOWNLOAD[:]
         options.append('--download-archive')
-        options.append(f'{playlist_dir}/.archive')
+        options.append(path.join(f'{playlist_dir}', '.archive'))
         options.append(playlist)
         youtube_dl(options)
 
@@ -90,7 +93,7 @@ if __name__ == '__main__':
     playlist = sys.argv[-1] if 'youtube.com' in sys.argv[-1] else None
 
     if update and playlist is None:
-        playlists = [f.split(' - ')[-1] for f in glob.glob('playlists/*')]
+        playlists = [f.split(' - ')[-1] for f in glob.glob(path.join('playlists', '*'))]
         for playlist in playlists:
             backup(playlist, download, no_git)
     else:
