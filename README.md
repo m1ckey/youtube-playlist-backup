@@ -11,5 +11,5 @@ Optionally, it can download the audio media.
 - `pip install -r requirements.txt`
 - `./backup.py`
 
-## Auto Update with GitHub Actions
+## Auto Update
 You can use the configured GitHub Action to update your tracked playlists weekly.
