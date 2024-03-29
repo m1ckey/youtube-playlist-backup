@@ -8,7 +8,7 @@ import json
 import subprocess as sp
 from os import path
 
-import youtube_dl as yt
+import youtube_dl
 
 HELP = f'''USAGE: {sys.argv[0]} [OPTIONS] [<PLAYLIST>]
 
@@ -20,20 +20,24 @@ OPTIONS:
 EXAMPLE: {sys.argv[0]} https://www.youtube.com/playlist?list=PLYhpjQWFnzXX360eOz0n7yvvURf8UHqtx
 '''
 
-YOUTUBE_DL_OPTIONS_PLAYLIST = ['--flat-playlist', '-J']
-YOUTUBE_DL_OPTIONS_DOWNLOAD = ['-i',
-                               '-x',
-                               '--audio-format', 'opus',
-                               '--audio-quality', '0',
-                               # todo: thumbnail
-                               '-o', path.join('playlists',
-                                               '%(playlist)s - %(playlist_id)s',
-                                               '%(title)s - %(id)s.%(ext)s')]
+YTDL_OPTIONS_PLAYLIST = ['--flat-playlist', '-J']
+YTDL_OPTIONS_DOWNLOAD = [
+    '-i',
+    '-x',
+    '--audio-format', 'opus',
+    '--audio-quality', '0',
+    # todo: thumbnail
+    '-o', path.join(
+        'playlists',
+        '%(playlist)s - %(playlist_id)s',
+        '%(title)s - %(id)s.%(ext)s'
+    )
+]
 
 
-def youtube_dl(options):
+def ytdl(options):
     try:
-        yt.main(options)
+        youtube_dl.main(options)
     except SystemExit as e:  # yt.main calls sys.exit
         if e.code != 0:
             raise e
@@ -56,10 +60,10 @@ def backup(playlist, download=False, no_git=False):
     if not no_git:
         pull()
 
-    options = YOUTUBE_DL_OPTIONS_PLAYLIST[:]
+    options = YTDL_OPTIONS_PLAYLIST[:]
     options.append(playlist)
     sys.stdout = stdout_buf = io.StringIO()
-    youtube_dl(options)
+    ytdl(options)
     sys.stdout = sys.__stdout__
 
     info = json.loads(stdout_buf.getvalue())
@@ -70,11 +74,11 @@ def backup(playlist, download=False, no_git=False):
         f.write(jsonl)
 
     if download:
-        options = YOUTUBE_DL_OPTIONS_DOWNLOAD[:]
+        options = YTDL_OPTIONS_DOWNLOAD[:]
         options.append('--download-archive')
         options.append(path.join(f'{playlist_dir}', '.archive'))
         options.append(playlist)
-        youtube_dl(options)
+        ytdl(options)
 
     if not no_git:
         push()
